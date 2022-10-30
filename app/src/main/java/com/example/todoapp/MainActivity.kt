@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
 
         val fab = findViewById<View>(R.id.fab) as FloatingActionButton
         listViewItems = findViewById<View>(R.id.items_list) as ListView
@@ -65,8 +66,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
             //then, we used the reference to set the value on that ID
             newItem.setValue(todoItem)
             dialog.dismiss()
-            Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT).show()
         }
         alert.show()
     }

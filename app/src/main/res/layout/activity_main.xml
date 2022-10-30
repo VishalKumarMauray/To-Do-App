@@ -7,25 +7,52 @@
     android:background="@color/silver"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TO DO App"
+        android:id="@+id/textview"
+        android:textSize="50dp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginTop="50dp"/>
     <ListView
         android:id="@+id/items_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_marginTop="70dp"
+        android:dividerHeight="10.0sp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/edittext"
         android:scrollbars="none" />
+
+    <EditText
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/edittext"
+        android:background="@drawable/box"
+        android:backgroundTint="@color/white"
+        android:layout_below="@+id/textview"
+        android:layout_marginTop="21dp"
+        android:hint="Type Something here..."
+        android:paddingLeft="10dp"
+        android:textColorHint="#302F2F"
+        android:textColor="@color/black"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:layout_marginLeft="10dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/edittext"
+        android:layout_below="@+id/textview"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_margin="15dp"
-        android:src="@android:drawable/ic_input_add"
-        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_action_btnicon"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp" />
 
