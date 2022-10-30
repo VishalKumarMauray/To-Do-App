@@ -2,30 +2,51 @@ package com.example.todoapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var mDatabase: DatabaseReference
+    var toDoItemList: MutableList<ToDoItem>? = null
+    lateinit var adapter: ToDoItemAdapter
+    private var listViewItems: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mDatabase = FirebaseDatabase.getInstance().reference
         val fab = findViewById<View>(R.id.fab) as FloatingActionButton
+        listViewItems = findViewById<View>(R.id.items_list) as ListView
 
         //Adding click listener for FAB
         fab.setOnClickListener { view ->
             //Show Dialog here to add new Item
             addNewItemDialog()
         }
+        mDatabase = FirebaseDatabase.getInstance().reference
+        toDoItemList = mutableListOf<ToDoItem>()
+        adapter = ToDoItemAdapter(this, toDoItemList!!)
+        listViewItems!!.setAdapter(adapter)
+
+        var itemListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Post object and use the values to update the UI
+                addDataToList(dataSnapshot)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Item failed, log a message
+                Log.w("MainActivity", "loadItem:onCancelled", databaseError.toException())
+            }
+        }
+        mDatabase.orderByKey().addListenerForSingleValueEvent(itemListener)
     }
 
     private fun addNewItemDialog() {
@@ -44,8 +65,34 @@ class MainActivity : AppCompatActivity() {
             //then, we used the reference to set the value on that ID
             newItem.setValue(todoItem)
             dialog.dismiss()
-            Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT)
+                .show()
         }
         alert.show()
+    }
+
+    private fun addDataToList(dataSnapshot: DataSnapshot) {
+        val items = dataSnapshot.children.iterator()
+        //Check if current database contains any collection
+        if (items.hasNext()) {
+            val toDoListindex = items.next()
+            val itemsIterator = toDoListindex.children.iterator()
+
+            //check if the collection has any to do items or not
+            while (itemsIterator.hasNext()) {
+                //get current item
+                val currentItem = itemsIterator.next()
+                val todoItem = ToDoItem.create()
+                //get current data in a map
+                val map = currentItem.getValue() as HashMap<String, Any>
+                //key will return Firebase ID
+                todoItem.objectId = currentItem.key
+                todoItem.done = map.get("done") as Boolean?
+                todoItem.itemText = map.get("itemText") as String?
+                toDoItemList!!.add(todoItem);
+            }
+        }
+        //alert adapter that has changed
+        adapter.notifyDataSetChanged()
     }
 }
