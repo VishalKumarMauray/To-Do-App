@@ -13,6 +13,7 @@ import android.widget.TextView
 class ToDoItemAdapter(context: Context, toDoItemList: MutableList<ToDoItem>) : BaseAdapter() {
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var itemList = toDoItemList
+    private var rowListener: ItemRowListener = context as ItemRowListener
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val objectId: String = itemList.get(position).objectId as String
         val itemText: String = itemList.get(position).itemText as String
@@ -27,8 +28,13 @@ class ToDoItemAdapter(context: Context, toDoItemList: MutableList<ToDoItem>) : B
             view = convertView
             vh = view.tag as ListRowHolder
         }
+        vh.isDone.setOnClickListener {
+            rowListener.modifyItemState(objectId, !done) }
+        vh.ibDeleteObject.setOnClickListener {
+            rowListener.onItemDelete(objectId) }
         vh.label.text = itemText
         vh.isDone.isChecked = done
+
         return view
     }
     override fun getItem(index: Int): Any {
