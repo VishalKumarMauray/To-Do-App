@@ -9,6 +9,10 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.example.todoapp.Adapter.ToDoItemAdapter
+import com.example.todoapp.Class.ToDoItem
+import com.example.todoapp.Interface.ItemRowListener
+import com.example.todoapp.Object.Constants
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 
@@ -92,12 +96,29 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
 
     override fun onItemDelete(itemObjectId: String) {
         val alert = AlertDialog.Builder(this)
-        alert.setTitle("Delete")
+        alert.setTitle("Delete Item")
         alert.setPositiveButton("Confirm") { dialog, _ ->
             val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
             itemReference.removeValue()
             dialog.dismiss()
             Toast.makeText(this, "Deleted Successfully", Toast.LENGTH_SHORT).show()
+        }
+        alert.show()
+    }
+
+    override fun onItemEdit(itemObjectId: String) {
+        val alert = AlertDialog.Builder(this)
+        val itemEditText = EditText(this)
+        alert.setTitle("update Item")
+        alert.setView(itemEditText)
+        alert.setPositiveButton("Submit") { dialog, _ ->
+            val todoItem = ToDoItem.create()
+            todoItem.itemText = itemEditText.text.toString()
+            val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
+            todoItem.objectId = itemReference.toString()
+            itemReference.setValue(todoItem)
+            dialog.dismiss()
+            Toast.makeText(this, "Update successfully ", Toast.LENGTH_SHORT).show()
         }
         alert.show()
     }

@@ -10,9 +10,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TO DO App"
+        android:text="@string/to_do_app"
         android:id="@+id/textview"
-        android:textSize="50dp"
+        android:textSize="50sp"
         android:textColor="@color/black"
         android:gravity="center"
         android:layout_marginTop="50dp"/>
@@ -35,20 +35,21 @@
         android:backgroundTint="@color/white"
         android:layout_below="@+id/textview"
         android:layout_marginTop="21dp"
-        android:hint="Type Something here..."
-        android:paddingLeft="10dp"
+        android:hint="@string/type_something_here"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:textColorHint="#302F2F"
         android:textColor="@color/black"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginStart="10dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
-        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/edittext"
+        android:layout_toEndOf="@+id/edittext"
         android:layout_below="@+id/textview"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"

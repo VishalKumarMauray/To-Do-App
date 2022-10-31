@@ -1,4 +1,4 @@
-package com.example.todoapp
+package com.example.todoapp.Class
 
 class ToDoItem {
     companion object Factory {
