@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
     private var listViewItems: ListView? = null
     private lateinit var editText: EditText
 
-    @SuppressLint("WrongViewCast", "CutPasteId")
+    @SuppressLint("WrongViewCast", "CutPasteId", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,7 +35,12 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
         val fab = findViewById<View>(R.id.fab) as FloatingActionButton
         listViewItems = findViewById<View>(R.id.items_list) as ListView
         editText = findViewById(R.id.edittext)
+        val refresh =findViewById(R.id.refresh) as ImageButton
 
+        refresh.setOnClickListener{
+            finish()
+            startActivity(intent)
+        }
         fab.setOnClickListener {
 
             val itemEditText = editText.text.toString()
