@@ -15,11 +15,11 @@ import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity(), ItemRowListener {
 
-    lateinit var mDatabase: DatabaseReference
-    var toDoItemList: MutableList<ToDoItem>? = null
-    lateinit var adapter: ToDoItemAdapter
+    private lateinit var mDatabase: DatabaseReference
+    private var toDoItemList: MutableList<ToDoItem>? = null
+    private lateinit var adapter: ToDoItemAdapter
     private var listViewItems: ListView? = null
-    lateinit var editText: EditText
+    private lateinit var editText: EditText
 
     @SuppressLint("WrongViewCast", "CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,25 +29,30 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
 
         val fab = findViewById<View>(R.id.fab) as FloatingActionButton
         listViewItems = findViewById<View>(R.id.items_list) as ListView
-        editText = findViewById<EditText?>(R.id.edittext)
+        editText = findViewById(R.id.edittext)
 
         fab.setOnClickListener {
 
-                val itemEditText = editText.text.toString()
-                val todoItem = ToDoItem.create()
-                todoItem.itemText = itemEditText
-                todoItem.done = false
-                val newItem = mDatabase.child(Constants.FIREBASE_ITEM).push()
-                todoItem.objectId = newItem.key
-                newItem.setValue(todoItem)
-                Toast.makeText(this, "Item saved with ID " + todoItem.objectId, Toast.LENGTH_SHORT).show()
-            }
+            val itemEditText = editText.text.toString()
+            val todoItem = ToDoItem.create()
+            todoItem.itemText = itemEditText
+            todoItem.done = false
+            val newItem = mDatabase.child(Constants.FIREBASE_ITEM).push()
+            todoItem.objectId = newItem.key
+            newItem.setValue(todoItem)
+            Toast.makeText(this, "Saved Successfully ", Toast.LENGTH_SHORT).show()
+            editText.setText("")
+            finish()
+            overridePendingTransition(0,0)
+            startActivity(intent)
+            overridePendingTransition(0,0)
+        }
         mDatabase = FirebaseDatabase.getInstance().reference
-        toDoItemList = mutableListOf<ToDoItem>()
+        toDoItemList = mutableListOf()
         adapter = ToDoItemAdapter(this, toDoItemList!!)
-        listViewItems!!.setAdapter(adapter)
+        listViewItems!!.adapter = adapter
 
-        var itemListener: ValueEventListener = object : ValueEventListener {
+        val itemListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 addDataToList(dataSnapshot)
             }
@@ -58,7 +63,7 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
         }
         mDatabase.orderByKey().addListenerForSingleValueEvent(itemListener)
     }
-    
+
 
     private fun addDataToList(dataSnapshot: DataSnapshot) {
         val items = dataSnapshot.children.iterator()
@@ -70,11 +75,11 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
             while (itemsIterator.hasNext()) {
                 val currentItem = itemsIterator.next()
                 val todoItem = ToDoItem.create()
-                val map = currentItem.getValue() as HashMap<String, Any>
+                val map = currentItem.value as HashMap<*, *>
                 todoItem.objectId = currentItem.key
-                todoItem.done = map.get("done") as Boolean?
-                todoItem.itemText = map.get("itemText") as String?
-                toDoItemList!!.add(todoItem);
+                todoItem.done = map["done"] as Boolean?
+                todoItem.itemText = map["itemText"] as String?
+                toDoItemList!!.add(todoItem)
             }
         }
         adapter.notifyDataSetChanged()
@@ -82,13 +87,13 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
 
     override fun modifyItemState(itemObjectId: String, isDone: Boolean) {
         val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
-        itemReference.child("done").setValue(isDone);
+        itemReference.child("done").setValue(isDone)
     }
 
     override fun onItemDelete(itemObjectId: String) {
         val alert = AlertDialog.Builder(this)
         alert.setTitle("Delete")
-        alert.setPositiveButton("Confirm") { dialog, positiveButton ->
+        alert.setPositiveButton("Confirm") { dialog, _ ->
             val itemReference = mDatabase.child(Constants.FIREBASE_ITEM).child(itemObjectId)
             itemReference.removeValue()
             dialog.dismiss()
